@@ -1,3 +1,9 @@
+"""
+Forms for the NewsApplication.
+
+Provides custom forms for user registration, article creation,
+newsletter management, and publisher staff assignment.
+"""
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django import forms
@@ -5,46 +11,40 @@ from .models import Article, Publisher, Newsletter
 
 
 class CustomUserRegistrationForm(UserCreationForm):
+    """Registration form that includes username, email, and role selection."""
+
     class Meta:
         model = CustomUser
-        # We explicitly list the fields we want the user to fill out
         fields = ("username", "email", "role")
 
 
-# create article form
-
-
 class ArticleForm(forms.ModelForm):
+    """Form for creating and editing articles."""
+
     class Meta:
         model = Article
-
         fields = ["headline", "content"]
 
 
-# newsletter
-
-
 class NewsletterForm(forms.ModelForm):
+    """Form for creating and editing newsletters."""
+
     class Meta:
         model = Newsletter
         fields = ["title", "content"]
 
 
-# publisher form
-
-
 class PublisherStaffForm(forms.ModelForm):
+    """Form for managing which journalists belong to a publisher."""
+
     class Meta:
         model = Publisher
-        fields = ["journalists"]  # We are only editing the journalists list
+        fields = ["journalists"]
 
     def __init__(self, *args, **kwargs):
+        """Filter the journalists field to only show users with the journalist role."""
         super().__init__(*args, **kwargs)
-
-        # 1. Filter the list so it ONLY shows users with the 'journalist' role
         self.fields["journalists"].queryset = CustomUser.objects.filter(
             role="journalist"
         )
-
-        # 2. Make the UI a list of checkboxes instead of an ugly multi-select box
         self.fields["journalists"].widget = forms.CheckboxSelectMultiple()
