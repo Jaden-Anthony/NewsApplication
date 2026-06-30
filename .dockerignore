@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+*.pyc
+__pycache__/
+.venv/
+venv/
+env/
+*.log
+db.sqlite3
+docs/_build/
+staticfiles/

@@ -1,35 +1,38 @@
-# Use the official Python image as a base
+# Use the official Python slim image
 FROM python:3.13-slim
 
-# Set environment variables to prevent Python from writing .pyc files
-# and to ensure output is sent straight to the terminal
+# Prevent .pyc files and buffer stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set the working directory inside the container
+# Default to SQLite so the image works without an external DB
+ENV DB_ENGINE=sqlite3
+ENV DJANGO_DEBUG=False
+ENV DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 0.0.0.0 [::1]
+
 WORKDIR /app
 
-# Install system dependencies required by mysqlclient
+# Install system dependencies required by mysqlclient (kept so MySQL works too)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     default-libmysqlclient-dev \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file and install Python dependencies
+# Install Python dependencies (includes gunicorn from requirements.txt)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project into the container
+# Copy project source
 COPY . .
 
-# Collect static files (if any) and apply database migrations
-RUN python manage.py collectstatic --noinput || true
-RUN python manage.py migrate --noinput || true
+# Make entrypoint executable
+RUN chmod +x entrypoint.sh
 
-# Expose port 8000 for the Django app
 EXPOSE 8000
 
-# Run the Django development server
-# For production use, replace with: gunicorn config.wsgi:application --bind 0.0.0.0:8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Lightweight healthcheck — verifies the app responds on port 8000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()" || exit 1
+
+ENTRYPOINT ["./entrypoint.sh"]
