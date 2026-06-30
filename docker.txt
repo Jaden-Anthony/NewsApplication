@@ -1,0 +1,19 @@
+Docker Hub Image — NewsApplication
+=====================================
+
+Public image URL:
+  https://hub.docker.com/r/jade46/newsapp
+
+Pull and run (no source code required):
+  docker pull jade46/newsapp:latest
+  docker run -p 8000:8000 -e DB_ENGINE=sqlite3 jade46/newsapp:latest
+
+Then visit:  http://localhost:8000/
+
+Notes:
+- DB_ENGINE=sqlite3 uses SQLite — no MySQL server needed.
+  Migrations run automatically on container start.
+- To create a superuser for testing:
+    docker exec -it <container_id> python manage.py createsuperuser
+- To run the full test suite inside the container:
+    docker run --rm -e DB_ENGINE=sqlite3 jade46/newsapp:latest python manage.py test NewsApplication --verbosity=2

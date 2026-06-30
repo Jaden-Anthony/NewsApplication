@@ -110,26 +110,40 @@ Open your browser at **http://127.0.0.1:8000/**.
 
 ## Option 2 — Run with Docker
 
-### 1. Build the Docker image
+The image is publicly available on Docker Hub — no build step required.
+
+### 2a. Pull and run from Docker Hub *(fastest — no source code needed)*
 
 ```bash
-docker build -t jade46/newsapp .
-```
-
-### 2. Run the container
-
-```bash
-docker run -p 8000:8000 jade46/newsapp
+docker pull jade46/newsapp:latest
+docker run -p 8000:8000 -e DB_ENGINE=sqlite3 jade46/newsapp:latest
 ```
 
 Open your browser at **http://127.0.0.1:8000/**.
 
-### 3. Push to Docker Hub *(optional)*
+> Docker Hub: https://hub.docker.com/r/jade46/newsapp
+
+### 2b. Build locally from source
 
 ```bash
-docker login
-docker push jade46/newsapp
+docker build -t jade46/newsapp .
+docker run -p 8000:8000 -e DB_ENGINE=sqlite3 jade46/newsapp
 ```
+
+### Notes
+
+- `DB_ENGINE=sqlite3` runs the app with SQLite — no MySQL server needed.
+  Migrations are applied automatically when the container starts.
+- To use MySQL instead, omit `DB_ENGINE` and pass the DB env vars listed
+  in the Security Notice section below.
+- To create an admin account inside the running container:
+  ```bash
+  docker exec -it <container_id> python manage.py createsuperuser
+  ```
+- To run the test suite inside Docker:
+  ```bash
+  docker run --rm -e DB_ENGINE=sqlite3 jade46/newsapp:latest python manage.py test NewsApplication --verbosity=2
+  ```
 
 ---
 
