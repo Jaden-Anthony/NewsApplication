@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Default to SQLite so the image works without an external DB
 ENV DB_ENGINE=sqlite3
 ENV DJANGO_DEBUG=False
-ENV DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 0.0.0.0 [::1]
+ENV DJANGO_ALLOWED_HOSTS="localhost 127.0.0.1 0.0.0.0 [::1]"
 
 WORKDIR /app
 
