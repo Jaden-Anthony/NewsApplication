@@ -1,161 +1,183 @@
-# NewsApp — Capstone Project (Final)
+# NewsApp — Django Capstone Project
 
-This repository contains the finalised NewsApp Django project for the Level 2 Capstone.
-
-## Overview
-
-- **Project:** NewsApp
-- **Framework:** Django
-- **Purpose:** A simple news publishing platform with roles (journalist, editor, reader), article CRUD, publisher management, subscriptions and a small API feed endpoint.
-
-## Prerequisites
-
-- Python 3.8 or newer
-- pip
-- git
-
-Optional but recommended:
-- Create and use a virtual environment (`venv` or `virtualenv`).
-
-## Quick setup
-
-Open a terminal and run the commands below from the project root (the folder that contains `manage.py`). Example path in this workspace:
-
-[NewsApp/manage.py](Level 2 - Introduction to Software Engineering/M06T08 – Capstone Project – News Application/Capstone Project/NewsApp/manage.py#L1)
-
-Commands (Windows PowerShell / bash):
-
-```bash
-cd "c:\Users\Jaden\OneDrive\Desktop\JA25030017630\Level 2 - Introduction to Software Engineering\M06T08 – Capstone Project – News Application\Capstone Project\NewsApp"
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1   # PowerShell
-# or on bash: source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# Apply migrations and create a superuser (follow prompts)
-python manage.py migrate
-python manage.py createsuperuser
-
-# Run development server
-python manage.py runserver
-```
-
-The app will be available at http://127.0.0.1:8000/ by default.
-
-## Running tests (if any)
-
-If this project contains Django tests, run:
-
-```bash
-python manage.py test
-```
-
-## API endpoint(s)
-
-This project exposes one primary API endpoint for subscribed article feeds:
-
-- GET `/api/feed/` — subscribed article feed (class: `SubscribedArticleFeedAPI`)
-
-Example curl request:
-
-```bash
-curl -i http://127.0.0.1:8000/api/feed/
-```
-
-Notes:
-- If the API requires authentication (session or token), authenticate first (login via the site or obtain a token), then include cookies or Authorization headers in your request.
-- You can also test the endpoint in the browser at http://127.0.0.1:8000/api/feed/ while logged in.
-
-## Populate sample data
-
-- Use the Django admin (http://127.0.0.1:8000/admin/) to create articles, publishers and users.
-- Ensure at least one published article exists so the feed returns results.
-
-## Common troubleshooting
-
-- If migrations fail, ensure the virtual environment is active and dependencies are installed.
-- If port `8000` is already in use, run `python manage.py runserver 0.0.0.0:8001` (or another port).
-
-## License & Credits
-
-This project was created as part of the Level 2 Capstone. Adjust or add a license file if you intend to publish it.
+A role-based news publishing platform built with Django. Supports three user
+roles — **Journalist**, **Editor**, and **Reader** — each with dedicated
+dashboards, CRUD operations, subscription management, and a REST API feed.
 
 ---
 
-If you want, I can also:
+## Prerequisites
 
-- run the server and verify the feed endpoint locally
-- add example Postman requests or a small test script to query the API
+| Tool | Version |
+|------|---------|
+| Python | 3.8 or newer |
+| pip | latest |
+| Git | any recent version |
+| MariaDB / MySQL | 10.x or newer (for production database) |
+| Docker *(optional)* | 20.x or newer |
 
-# NewsApp Capstone Project
+---
 
-This is the Django News Application capstone project. It includes custom user registration and login, article and newsletter management, publisher staff functionality, and reader subscriptions.
+## Option 1 — Run with a Virtual Environment (venv)
 
-## What is included
+### 1. Clone the repository
 
-- Django 6.0.6 project setup
-- `NewsApplication` app with:
-  - custom `CustomUser` model
-  - article creation, update, delete, and detail views
-  - publisher management and staff pages
-  - newsletter creation and management
-  - login, logout, and registration templates
-- SQLite database configuration for local development
-- simple templates under `NewsApplication/templates/NewsApplication`
+```bash
+git clone https://github.com/Jaden-Anthony/NewsApplication.git
+cd NewsApplication
+```
 
-## Requirements
+### 2. Create and activate a virtual environment
 
-The project uses the following packages:
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-- Django==6.0.6
-- asgiref==3.11.1
-- sqlparse==0.5.5
-- tzdata==2026.2
+**Linux / macOS:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-Install them from the project `requirements.txt`.
+### 3. Install dependencies
 
-## Setup
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-1. Open a terminal in the project root:
-   ```powershell
-   cd "C:\Users\Jaden\OneDrive\Desktop\JA25030017630\Level 2 - Introduction to Software Engineering\M06T08 – Capstone Project - News Application\Capstone Project\NewsApp"
-   ```
+### 4. Configure the database
 
-2. Create and activate a virtual environment:
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+The project is configured to use **MariaDB / MySQL**. Open
+`config/settings.py` and update the `DATABASES` section with your local
+credentials:
 
-3. Install dependencies:
-   ```powershell
-   python -m pip install --upgrade pip
-   python -m pip install -r requirements.txt
-   ```
+```python
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "news_application_db",   # Create this database first
+        "USER": "root",                  # Your MariaDB username
+        "PASSWORD": "your_password",     # Your MariaDB password
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+    }
+}
+```
 
-4. Apply database migrations:
-   ```powershell
-   python manage.py migrate
-   ```
+> **Important:** Create the database before running migrations:
+> ```sql
+> CREATE DATABASE news_application_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+> ```
 
-5. Create a superuser (optional, for admin access):
-   ```powershell
-   python manage.py createsuperuser
-   ```
+If you prefer SQLite for quick local testing, replace the `DATABASES` block
+with:
 
-6. Start the development server:
-   ```powershell
-   python manage.py runserver
-   ```
+```python
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+```
 
-7. Open the app in your browser:
-   ```text
-   http://127.0.0.1:8000/
-   ```
+### 5. Apply migrations
 
-## Notes
+```bash
+python manage.py migrate
+```
 
-- Do not commit secret keys or database files.
-- The project is configured for local development with SQLite.
-- If you want to reset the database, delete `db.sqlite3` and rerun `python manage.py migrate`.
+### 6. Create a superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+Follow the prompts to set a username, email, and password.
+
+### 7. Start the development server
+
+```bash
+python manage.py runserver
+```
+
+Open your browser at **http://127.0.0.1:8000/**.
+
+---
+
+## Option 2 — Run with Docker
+
+### 1. Build the Docker image
+
+```bash
+docker build -t jade46/newsapp .
+```
+
+### 2. Run the container
+
+```bash
+docker run -p 8000:8000 jade46/newsapp
+```
+
+Open your browser at **http://127.0.0.1:8000/**.
+
+### 3. Push to Docker Hub *(optional)*
+
+```bash
+docker login
+docker push jade46/newsapp
+```
+
+---
+
+## API Endpoint
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/api/feed/` | Returns a JSON list of approved articles from journalists the authenticated reader subscribes to. |
+
+**Authentication:** The API uses session or basic authentication. Log in via
+the web interface first, or include credentials in your request:
+
+```bash
+curl -u username:password http://127.0.0.1:8000/api/feed/
+```
+
+---
+
+## Project Structure
+
+```
+NewsApp/
+├── config/             # Django project settings, URLs, WSGI
+├── NewsApplication/    # Main app (models, views, templates, forms)
+│   ├── templates/      # HTML templates
+│   ├── models.py       # Article, Newsletter, Publisher, CustomUser
+│   ├── views.py        # Class-based views and API views
+│   ├── forms.py        # Registration, article, newsletter forms
+│   ├── serializers.py  # DRF serializers for the API
+│   └── urls.py         # URL routing
+├── docs/               # Sphinx documentation (auto-generated)
+├── Dockerfile          # Container configuration
+├── manage.py           # Django management script
+├── requirements.txt    # Python dependencies
+└── README.md           # This file
+```
+
+---
+
+## Security Notice
+
+> **Do not** commit database passwords, secret keys, or API tokens to a
+> public repository. Update `SECRET_KEY` and database credentials in
+> `config/settings.py` with your own values before deploying.
+
+---
+
+## License & Credits
+
+This project was created as part of the HyperionDev Software Engineering
+Bootcamp capstone. Adjust or add a license file if you intend to publish it.

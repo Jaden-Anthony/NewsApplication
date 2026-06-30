@@ -11,3 +11,6 @@ db.sqlite3
 
 # OS
 .DS_Store
+
+# Reviewer-only file — never commit
+reviewer_notes.txt
