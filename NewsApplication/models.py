@@ -25,6 +25,7 @@ class Article(models.Model):
 
 
 class Newsletter(models.Model):
+    """Represents a newsletter authored by a journalist."""
 
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -37,9 +38,9 @@ class Newsletter(models.Model):
 
 
 class Publisher(models.Model):
+    """Represents a news publisher that can have multiple editors and journalists."""
 
     name = models.CharField(max_length=30)
-    # Defines the relationship allowing multiple editors and journalists per publisher
     editors = models.ManyToManyField(
         "CustomUser", related_name="publisher_editors", blank=True
     )
@@ -55,6 +56,12 @@ class Publisher(models.Model):
 
 
 class CustomUser(AbstractUser):
+    """
+    Extended user model with role-based access control.
+
+    Supports three roles: reader, editor, and journalist.
+    Each role has different permissions and relationships.
+    """
 
     ROLE_CHOICES = [
         ("reader", "Reader"),
@@ -80,7 +87,7 @@ class CustomUser(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        # Save the instance first so ManyToMany fields have a primary key to reference
+        """Save the user and enforce role-specific field constraints."""
         super().save(*args, **kwargs)
 
         # Enforce mutually exclusive fields by clearing the opposing role's data
