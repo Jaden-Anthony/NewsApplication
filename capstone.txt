@@ -1,0 +1,5 @@
+GitHub Repository:
+https://github.com/Jaden-Anthony/NewsApplication
+
+Docker Hub Image:
+https://hub.docker.com/r/jade46/newsapp
