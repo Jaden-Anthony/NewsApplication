@@ -1,3 +1,7 @@
+"""
+This module defines the database models for the News Application.
+Includes content models like Article, Newsletter, and CustomUser for role-based access.
+"""
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -8,7 +12,10 @@ from django.dispatch import receiver
 
 
 class Article(models.Model):
-
+    """
+    Represents a news article submitted by a journalist.
+    Articles must be approved by an editor before they are publicly visible.
+    """
     headline = models.CharField(max_length=100)
     content = models.TextField(max_length=2500)
     approved_status = models.BooleanField(default=False)

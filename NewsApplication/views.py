@@ -1,3 +1,7 @@
+"""
+This module contains the views for rendering templates and handling HTTP requests.
+It includes authentication views, dashboards, and standard CRUD operations.
+"""
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -26,6 +30,10 @@ from .serializers import ArticleSerializer
 
 
 class HomeView(ListView):
+    """
+    Displays the landing page containing a list of approved articles.
+    Articles are ordered from newest to oldest.
+    """
     model = Article
     template_name = "NewsApplication/index.html"
     context_object_name = "articles"
