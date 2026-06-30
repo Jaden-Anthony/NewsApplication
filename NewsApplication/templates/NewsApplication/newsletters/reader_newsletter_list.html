@@ -1,0 +1,43 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}My Subscribed Newsletters{% endblock %}
+{% block content %}
+<div style="margin-bottom: 30px;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #34495e; padding-bottom: 10px;">
+        My Newsletter Inbox
+    </h2>
+    <p style="color: #7f8c8d;">
+        The latest newsletters from the journalists you follow.
+    </p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    {% for newsletter in newsletters %}
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #8e44ad;">
+        <h3 style="margin-top: 0; color: #34495e; margin-bottom: 5px;">
+            {{ newsletter.title }}
+        </h3>
+        {% with author=newsletter.independent_authors.first %}
+        {% if author %}
+        <p style="color: #95a5a6; font-size: 0.9em; margin-top: 0; font-style: italic;">
+            From: {{ author.username }}
+        </p>
+
+        {% endif %}
+        {% endwith %}
+        <hr style="border: 0; height: 1px; background: #eee; margin: 15px 0;" />
+
+        <div style="color: #333; line-height: 1.6; white-space: pre-wrap;">
+            {{ newsletter.content }}
+        </div>
+    </div>
+    {% empty %}
+    <div style="background: #fdfefe; padding: 30px; text-align: center; border-radius: 8px; border: 1px dashed #bdc3c7;">
+        <h3 style="color: #7f8c8d;">Your inbox is currently empty.</h3>
+        <p style="color: #95a5a6;">
+            Subscribe to more journalists to receive their newsletters here.
+        </p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

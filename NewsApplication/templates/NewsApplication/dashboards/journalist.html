@@ -1,0 +1,89 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Journalist Dashboard{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>My Article Portfolio</h2>
+    <a href="{% url 'article_create' %}"
+       style="padding: 10px 15px; background: #27ae60; color: white; text-decoration: none; border-radius: 5px;">
+        + Draft New Article
+    </a>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <tr style="background: #2c3e50; color: white; text-align: left;">
+        <th style="padding: 12px;">Headline</th>
+        <th style="padding: 12px;">Status</th>
+        <th style="padding: 12px;">Actions</th>
+    </tr>
+    {% for article in my_articles %}
+    <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 12px;">{{ article.headline }}</td>
+        <td style="padding: 12px;">
+            {% if article.approved_status %}
+            <span style="color: #27ae60; font-weight: bold;">
+                Published
+            </span>
+            {% else %}
+            <span style="color: #f39c12; font-weight: bold;">
+                Under Review
+            </span>
+            {% endif %}
+        </td>
+        <td style="padding: 12px;">
+            <a href="{% url 'article_edit' article.pk %}"
+               style="color: #3498db; text-decoration: none; margin-right: 10px;">
+                Edit
+            </a>
+            <a href="{% url 'article_delete' article.pk %}"
+               style="color: #e74c3c; text-decoration: none;">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3"
+            style="padding: 20px; text-align: center; color: #7f8c8d;">
+            You haven't written any articles yet.
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 50px; margin-bottom: 20px;">
+    <h2>My Newsletters</h2>
+    <a href="{% url 'newsletter_create' %}"
+       style="padding: 10px 15px; background: #8e44ad; color: white; text-decoration: none; border-radius: 5px;">
+        + Draft New Newsletter
+    </a>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <tr style="background: #2c3e50; color: white; text-align: left;">
+        <th style="padding: 12px;">Newsletter Title</th>
+        <th style="padding: 12px;">Actions</th>
+    </tr>
+    {% for newsletter in my_newsletters %}
+    <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 12px;">{{ newsletter.title }}</td>
+        <td style="padding: 12px;">
+            <a href="{% url 'newsletter_edit' newsletter.pk %}"
+               style="color: #3498db; text-decoration: none; margin-right: 10px;">
+                Edit
+            </a>
+            <a href="{% url 'newsletter_delete' newsletter.pk %}"
+               style="color: #e74c3c; text-decoration: none;">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="2"
+            style="padding: 20px; text-align: center; color: #7f8c8d;">
+            You haven't drafted any newsletters yet.
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}NewsApplication{% endblock %}</title>
+
+    <style>
+        /* CSS Reset and Flexbox Container */
+        body { 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            height: 100vh; /* Takes up full screen height */
+        }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50; /* Dark blue/grey */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            border-bottom: 1px solid #34495e;
+        }
+        .sidebar a:hover { background-color: #3b536b; } /* Highlight on hover */
+        
+        /* Main Content Area */
+        .main-wrapper {
+            flex-grow: 1; /* Takes up remaining space next to sidebar */
+            display: flex;
+            flex-direction: column;
+            background-color: #f4f6f9;
+        }
+        
+        /* Optional Top Bar for Logout/User Info */
+        .top-header { 
+            background: white; 
+            padding: 15px 20px; 
+            text-align: right; 
+            border-bottom: 1px solid #ddd; 
+        }
+        
+        /* The actual block content zone */
+        .content-area { 
+            padding: 30px; 
+            flex-grow: 1; 
+            overflow-y: auto; /* Adds scrollbar if content gets too long */
+        }
+        
+        footer { text-align: center; padding: 15px; color: #7f8c8d; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h2>NewsApp</h2>
+
+        <a href="{% url 'home' %}">Home Feed</a>
+        {% if request.user.is_authenticated %}
+        {% if request.user.role == 'reader' %}
+        <a href="{% url 'reader_newsletters' %}">
+            My Newsletters
+        </a>
+        <a href="{% url 'article_list' %}">My Personalized Feed</a>
+        <a href="{% url 'manage_subscriptions' %}">Manage Subscriptions</a>
+        {% elif request.user.role == 'journalist' %}
+        <a href="{% url 'journalist_dashboard' %}">
+            My Dashboard
+        </a>
+        <a href="{% url 'article_create' %}">Draft New Article</a>
+        <a href="{% url 'newsletter_create' %}">Draft New Newsletter</a>
+        {% elif request.user.role == 'editor' %}
+        <a href="{% url 'editor_dashboard' %}">
+            Review Queue
+        </a>
+        <a href="{% url 'manage_publishers' %}">Manage Publishers</a>
+        {% endif %}
+        {% else %}
+        <a href="{% url 'login' %}">
+            Login
+        </a>
+        <a href="{% url 'register' %}">Register Account</a>
+        {% endif %}
+    </nav>
+
+    <div class="main-wrapper">
+        <header class="top-header">
+            {% if request.user.is_authenticated %}
+            <span>
+                Logged in as
+                <strong>{{ request.user.username }}</strong>
+                ({{ request.user.role|title }})
+            </span>
+            |
+            <form action="{% url 'logout' %}"
+                  method="POST"
+                  style="display:inline;">
+                {% csrf_token %}
+                <button style="background:none; border:none; color:#e74c3c; cursor:pointer; font-weight:bold;"
+                        type="submit">
+                    Logout
+                </button>
+            </form>
+            {% endif %}
+        </header>
+
+        <main class="content-area">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer>&copy; 2026 My Capstone Django Project</footer>
+    </div>
+</body>
+</html>

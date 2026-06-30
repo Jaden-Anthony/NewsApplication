@@ -1,0 +1,55 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}My Personalized Feed{% endblock %}
+{% block content %}
+<div style="margin-bottom: 30px;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #34495e; padding-bottom: 10px;">
+        My Subscription Feed
+    </h2>
+    <p style="color: #7f8c8d;">
+        Chronological feed of approved articles authored by subscribed journalists.
+    </p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+    <!-- Iterating over the context_object_name defined in ArticleList -->
+    {% for article in articles %}
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+        <h3 style="margin-top: 0; color: #34495e; margin-bottom: 5px;">
+            {{ article.headline }}
+        </h3>
+
+        <!-- Utilizing the reverse lookup to display the author -->
+        {% with author=article.independent_authors.first %}
+        {% if author %}
+        <p style="color: #95a5a6; font-size: 0.9em; margin-top: 0; font-style: italic;">
+            Authored by: {{ author.username }}
+        </p>
+
+        {% endif %}
+        {% endwith %}
+        <!-- Content truncation prevents feed bloating -->
+        <p style="color: #555; line-height: 1.6;">
+            {{ article.content|truncatewords:40 }}
+        </p>
+
+        <a href="{% url 'article_detail' article.pk %}"
+           style="display: inline-block; margin-top: 10px; color: #3498db; text-decoration: none; font-weight: bold;">
+            Read Full Article &rarr;
+        </a>
+    </div>
+    {% empty %}
+    <!-- Fallback UI when the query set returns zero results -->
+    <div style="background: #fdfefe; padding: 30px; text-align: center; border-radius: 8px; border: 1px dashed #bdc3c7;">
+        <h3 style="color: #7f8c8d;">Your feed is currently empty.</h3>
+        <p style="color: #95a5a6;">
+            To populate this dashboard, navigate to the Home feed and subscribe to active journalists.
+        </p>
+        <a href="{% url 'home' %}"
+           style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            Browse Public Feed
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Login - NewsApp{% endblock %}
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">
+        System Login
+    </h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div style="line-height: 1.8; margin-bottom: 20px;">
+            {{ form.as_p }}
+        </div>
+
+        <button style="width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1em;"
+                type="submit">
+            Authenticate
+        </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+        <p style="color: #7f8c8d;">
+            Access requires authorization.
+            <br />
+            <a href="{% url 'register' %}"
+               style="color: #3498db; text-decoration: none; font-weight: bold;">
+                Register a new account
+            </a>.
+        </p>
+    </div>
+</div>
+{% endblock %}

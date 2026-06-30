@@ -1,0 +1,31 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Manage Staff - {{ object.name }}{% endblock %}
+{% block content %}
+<div style="max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h2 style="margin-top: 0; color: #2c3e50;">
+        Manage Staff: {{ object.name }}
+    </h2>
+    <p style="color: #7f8c8d; margin-bottom: 25px;">
+        Select the journalists you want to assign to this publisher.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div style="line-height: 2; font-size: 1.1em;">{{ form.as_p }}</div>
+
+        <hr style="border: 0; height: 1px; background: #eee; margin: 25px 0;" />
+
+        <div>
+            <button style="padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;"
+                    type="submit">
+                Update Staff List
+            </button>
+            <a href="{% url 'manage_publishers' %}"
+               style="margin-left: 15px; color: #e74c3c; text-decoration: none;">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

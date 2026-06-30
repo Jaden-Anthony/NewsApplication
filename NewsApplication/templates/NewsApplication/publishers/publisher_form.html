@@ -1,0 +1,23 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Create Publisher{% endblock %}
+{% block content %}
+<div style="max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h2 style="margin-top: 0; color: #2c3e50;">Register New Publisher</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div style="margin-top: 20px;">
+            <button style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer;"
+                    type="submit">
+                Save Publisher
+            </button>
+            <a href="{% url 'manage_publishers' %}"
+               style="margin-left: 15px; color: #7f8c8d; text-decoration: none;">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

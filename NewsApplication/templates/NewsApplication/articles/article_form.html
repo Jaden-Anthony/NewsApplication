@@ -1,0 +1,16 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Draft New Article{% endblock %}
+{% block content %}
+<h2>Draft a New Article</h2>
+<p>Submit your story below. It will be sent to the Editors for review.</p>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button style="padding: 10px 20px; background: #2c3e50; color: white; border: none; cursor: pointer;"
+            type="submit">
+        Submit for Review
+    </button>
+</form>
+{% endblock %}

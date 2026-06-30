@@ -1,0 +1,85 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Manage Subscriptions{% endblock %}
+{% block content %}
+<h2 style="color: #2c3e50; border-bottom: 2px solid #34495e; padding-bottom: 10px;">
+    Subscription Management
+</h2>
+
+<div style="display: flex; gap: 30px; margin-top: 20px;">
+    <!-- Active Journalist Subscriptions -->
+    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h3 style="color: #34495e; margin-top: 0;">Followed Journalists</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for journalist in journalists %}
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                <span>{{ journalist.username }}</span>
+                <form action="{% url 'toggle_journalist_sub' journalist.pk %}"
+                      method="POST">
+                    {% csrf_token %}
+                    <button style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;"
+                            type="submit">
+                        Unsubscribe
+                    </button>
+                </form>
+            </li>
+            {% empty %}
+            <li style="color: #7f8c8d; font-style: italic;">
+                No independent journalists followed.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Active Publisher Subscriptions -->
+    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h3 style="color: #34495e; margin-top: 0;">Followed Publishers</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for publisher in publishers %}
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                <span>{{ publisher.name }}</span>
+                <form action="{% url 'toggle_publisher_sub' publisher.pk %}"
+                      method="POST">
+                    {% csrf_token %}
+                    <button style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em;"
+                            type="submit">
+                        Unsubscribe
+                    </button>
+                </form>
+            </li>
+            {% empty %}
+            <li style="color: #7f8c8d; font-style: italic;">
+                No publishers followed.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- Publisher Discovery Module -->
+<h3 style="color: #2c3e50; margin-top: 40px;">Discover Publishers</h3>
+<div style="display: flex; flex-wrap: wrap; gap: 15px;">
+    {% for publisher in available_publishers %}
+    <div style="background: #fdfefe; padding: 15px; border: 1px solid #bdc3c7; border-radius: 6px; width: 250px;">
+        <h4 style="margin: 0 0 10px 0; color: #34495e;">
+            {{ publisher.name }}
+        </h4>
+        <p style="font-size: 0.85em; color: #7f8c8d; margin-bottom: 15px;">
+            {{ publisher.journalists.count }} Active Journalists
+        </p>
+        <form action="{% url 'toggle_publisher_sub' publisher.pk %}"
+              method="POST">
+            {% csrf_token %}
+            <button style="width: 100%; padding: 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                    type="submit">
+                + Subscribe
+            </button>
+        </form>
+    </div>
+    {% empty %}
+    <p style="color: #7f8c8d; font-style: italic;">
+        You are subscribed to all available publishers.
+    </p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Draft Newsletter{% endblock %}
+{% block content %}
+<h2>Draft a Newsletter</h2>
+<p>Compose your newsletter to be sent to your subscribers.</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <div style="line-height: 2;">{{ form.as_p }}</div>
+
+    <button style="padding: 10px 20px; background: #8e44ad; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;"
+            type="submit">
+        Save Newsletter
+    </button>
+    <a href="{% url 'journalist_dashboard' %}"
+       style="margin-left: 15px; color: #7f8c8d; text-decoration: none;">
+        Cancel
+    </a>
+</form>
+{% endblock %}

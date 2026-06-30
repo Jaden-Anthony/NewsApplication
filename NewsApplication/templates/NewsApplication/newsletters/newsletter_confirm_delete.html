@@ -1,0 +1,24 @@
+
+{% extends "NewsApplication/base.html" %}
+{% block title %}Delete Newsletter{% endblock %}
+{% block content %}
+<div style="background: white; padding: 30px; border-radius: 8px; border: 1px solid #e74c3c;">
+    <h2 style="color: #e74c3c;">Confirm Deletion</h2>
+    <p>
+        Are you sure you want to delete the newsletter:
+        <strong>"{{ object.title }}"</strong>?
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button style="padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;"
+                type="submit">
+            Yes, Delete
+        </button>
+        <a href="{% url 'journalist_dashboard' %}"
+           style="margin-left: 15px; text-decoration: none; color: #2c3e50;">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}
