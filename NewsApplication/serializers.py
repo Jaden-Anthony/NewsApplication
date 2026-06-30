@@ -1,15 +1,23 @@
+"""
+REST framework serializers for the NewsApplication.
+
+Provides serializers for articles and their authors for the API feed.
+"""
 from rest_framework import serializers
 from .models import Article, CustomUser
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    """Serializes a CustomUser to display username and role."""
+
     class Meta:
         model = CustomUser
         fields = ["username", "role"]
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    # Nested serializer to display author details instead of just primary keys
+    """Serializes an Article with nested author details."""
+
     independent_authors = AuthorSerializer(many=True, read_only=True)
 
     class Meta:
