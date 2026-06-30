@@ -3,6 +3,17 @@ import sys
 import django
 sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'
+
+# Override the database to use SQLite so Sphinx can build
+# documentation without requiring a running MySQL server.
+import django.conf
+django.conf.settings.DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+}
+
 django.setup()
 
 # Configuration file for the Sphinx documentation builder.
