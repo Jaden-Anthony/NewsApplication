@@ -47,10 +47,18 @@ class HomeView(ListView):
 
 
 class RoleBasedLoginView(LoginView):
-    # Updated to match your specific app directory
+    """
+    Custom login view that redirects users to role-specific dashboards
+    after successful authentication.
+
+    - Journalists are sent to their dashboard.
+    - Editors are sent to the review queue.
+    - Readers are sent to their personalized article feed.
+    """
     template_name = "NewsApplication/registration/login.html"
 
     def get_success_url(self):
+        """Return the URL to redirect to after a successful login based on the user's role."""
         user = self.request.user
         if user.role == "journalist":
             return reverse_lazy("journalist_dashboard")
@@ -63,15 +71,15 @@ class RoleBasedLoginView(LoginView):
 
 
 class SignUpView(SuccessMessageMixin, CreateView):
-    # 1. Tell the view which form to use
+    """
+    Handles new user registration.
+
+    Uses :class:`~NewsApplication.forms.CustomUserRegistrationForm` and
+    redirects to the home page with a success message on completion.
+    """
     form_class = CustomUserRegistrationForm
-
-    # 2. Where to send the user after they successfully sign up
     success_url = reverse_lazy("home")
-
-    # 3. The HTML template to render
     template_name = "NewsApplication/registration/register.html"
-    
     success_message = "Registration successful!"
 
 
@@ -79,6 +87,7 @@ class SignUpView(SuccessMessageMixin, CreateView):
 
 
 class ArticleList(LoginRequiredMixin, ListView):
+    """Displays a personalized article feed based on the reader's subscriptions."""
     model = Article
     template_name = "NewsApplication/articles/articles_list.html"
     context_object_name = "articles"
@@ -114,6 +123,7 @@ class ArticleList(LoginRequiredMixin, ListView):
 
 
 class JournalistDashboard(LoginRequiredMixin, TemplateView):
+    """Dashboard for journalists showing their articles and newsletters."""
     template_name = "NewsApplication/dashboards/journalist.html"
 
     def get_context_data(self, **kwargs):
@@ -132,6 +142,7 @@ class JournalistDashboard(LoginRequiredMixin, TemplateView):
 
 
 class PublisherListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """Lists all publishers. Only accessible to editors."""
     model = Publisher
     template_name = "NewsApplication/publishers/publisher_list.html"
     context_object_name = "publishers"
@@ -142,8 +153,9 @@ class PublisherListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 class PublisherCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    """Allows editors to create a new publisher."""
     model = Publisher
-    fields = ["name"]  # We only need the name right now
+    fields = ["name"]
     template_name = "NewsApplication/publishers/publisher_form.html"
     success_url = reverse_lazy("manage_publishers")
 
@@ -152,6 +164,7 @@ class PublisherCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 class PublisherStaffManageView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """Allows editors to assign or remove journalists from a publisher."""
     model = Publisher
     form_class = PublisherStaffForm
     template_name = "NewsApplication/publishers/publisher_staff.html"
@@ -166,6 +179,7 @@ class PublisherStaffManageView(LoginRequiredMixin, UserPassesTestMixin, UpdateVi
 
 
 class EditorDashboard(LoginRequiredMixin, TemplateView):
+    """Dashboard for editors showing articles pending approval."""
     template_name = "NewsApplication/dashboards/editor.html"
 
     def get_context_data(self, **kwargs):
@@ -179,6 +193,10 @@ class EditorDashboard(LoginRequiredMixin, TemplateView):
 
 # The Approval Engine
 class ArticleApproveView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    Approves a pending article and sends email notifications to all
+    readers subscribed to the article's author(s) or their publishers.
+    """
     permission_required = "NewsApplication.change_article"
 
     def post(self, request, pk, *args, **kwargs):
@@ -233,11 +251,10 @@ class ArticleApproveView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Allows journalists to create a new article draft."""
     model = Article
     form_class = ArticleForm
     template_name = "NewsApplication/articles/article_form.html"
-
-    # The Bouncer: Only users with this specific permission can access the page
     permission_required = "NewsApplication.add_article"
 
     # Where to send the Journalist after they click Submit
@@ -258,12 +275,10 @@ class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
 
 
 class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Allows journalists to edit one of their own articles."""
     model = Article
-    form_class = ArticleForm  # We reuse the exact same form from the Create step!
-    template_name = (
-        "NewsApplication/articles/article_form.html"  # We reuse the template too!
-    )
-
+    form_class = ArticleForm
+    template_name = "NewsApplication/articles/article_form.html"
     permission_required = "NewsApplication.change_article"
     success_url = reverse_lazy("journalist_dashboard")
 
@@ -276,9 +291,9 @@ class ArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
 
 
 class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Allows journalists to delete one of their own articles."""
     model = Article
     template_name = "NewsApplication/articles/article_confirm_delete.html"
-
     permission_required = "NewsApplication.delete_article"
     success_url = reverse_lazy("journalist_dashboard")
 
@@ -291,6 +306,7 @@ class ArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
 
 
 class ArticleDetailView(DetailView):
+    """Displays the full content of a single article."""
     model = Article
     template_name = "NewsApplication/articles/article_detail.html"
     context_object_name = "article"
@@ -314,6 +330,7 @@ class ArticleDetailView(DetailView):
 
 
 class ToggleJournalistSubscription(LoginRequiredMixin, View):
+    """Toggles a reader's subscription to a specific journalist."""
     def post(self, request, pk, *args, **kwargs):
         # 1. Find the journalist the reader is trying to subscribe to
         journalist = get_object_or_404(CustomUser, pk=pk, role="journalist")
@@ -348,6 +365,7 @@ class TogglePublisherSubscription(LoginRequiredMixin, View):
 
 
 class ReaderSubscriptionsView(LoginRequiredMixin, TemplateView):
+    """Displays and manages a reader's journalist and publisher subscriptions."""
     template_name = "NewsApplication/reader/subscriptions_manage.html"
 
     def get_context_data(self, **kwargs):
@@ -366,6 +384,7 @@ class ReaderSubscriptionsView(LoginRequiredMixin, TemplateView):
 
 #  Newsletter CRUD Views
 class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Allows journalists to create a new newsletter."""
     model = Newsletter
     form_class = NewsletterForm
     template_name = "NewsApplication/newsletters/newsletter_form.html"
@@ -380,6 +399,7 @@ class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
 
 
 class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Allows journalists to edit one of their own newsletters."""
     model = Newsletter
     form_class = NewsletterForm
     template_name = "NewsApplication/newsletters/newsletter_form.html"
@@ -392,6 +412,7 @@ class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
 
 
 class NewsletterDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Allows journalists to delete one of their own newsletters."""
     model = Newsletter
     template_name = "NewsApplication/newsletters/newsletter_confirm_delete.html"
     permission_required = "NewsApplication.delete_newsletter"
@@ -403,6 +424,7 @@ class NewsletterDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
 
 
 class ReaderNewsletterList(LoginRequiredMixin, ListView):
+    """Displays newsletters from journalists the reader is subscribed to."""
     model = Newsletter
     template_name = "NewsApplication/newsletters/reader_newsletter_list.html"
     context_object_name = "newsletters"
@@ -429,6 +451,10 @@ class ReaderNewsletterList(LoginRequiredMixin, ListView):
 
 
 class SubscribedArticleFeedAPI(generics.ListAPIView):
+    """
+    REST API endpoint that returns a JSON list of approved articles
+    from journalists the authenticated reader subscribes to.
+    """
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticated]
 
